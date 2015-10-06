@@ -86,8 +86,8 @@
 ; the condition is true
 (defvar *number-was-odd* nil)
 (when (oddp 5)
-      (setf *number-was-odd* t)
-      'odd-number)
+  (setf *number-was-odd* t)
+  'odd-number)
 ; ODD_NUMBER
 
 ; unless
@@ -95,9 +95,57 @@
 ; all the enclosed expressions are evaluated when
 ; the condition is false
 (unless (oddp 4)
-      (setf *number-was-odd* nil)
-      'even-number)
+  (setf *number-was-odd* nil)
+  'even-number)
 ; EVEN_NUMBER
 
 ; Both return nil when the condition evaluates in the opposite way,
 ; they just return nil and do nothing.
+
+;; cond
+(defvar *arch-enemy* nil)
+(defun pudding-eater (person)
+  (cond ((eq person 'henry)
+         (setf *arch-enemy* 'stupid-lisp-alien)
+         '(curse you lisp alien'- you ate my pudding))
+        ((eq person 'johny)
+         (setf *arch-enemy* 'useless-old-johny)
+         '(i hope you choked on my pudding johny))
+        (t ; <- default case
+          '(why you eat my pudding stranger?))))
+; PUDDING-EATER
+(pudding-eater 'koko)
+; (WHY YOU EAT MY PUDDING STRANGER?)
+*arch-enemy*
+; NIL
+(pudding-eater 'johny)
+; (I HOPE YOU CHOKED ON MY PUDDING JOHNY)
+*arch-enemy*
+; USELESS-OLD-JOHNY
+(pudding-eater 'henry)
+; (CURSE YOU LISP ALIEN '- YOU ATE MY PUDDING)
+*arch-enemy*
+; STUPID-LISP-ALIEN
+
+; case
+; When you're using eq to compare with the same symbol
+; in all cond branches it is a lot easier to use case
+(defun pudding-eater (person)
+  (case person
+        ((henry)
+         (setf *arch-enemy* 'stupid-lisp-alien)
+         '(curse you lisp alien'- you ate my pudding))
+        (('johny)
+         (setf *arch-enemy* 'useless-old-johny)
+         '(i hope you choked on my pudding johny))
+        (otherwise ; <- default case
+          '(why you eat my pudding stranger?))))
+(pudding-eater 'koko)
+; (WHY YOU EAT MY PUDDING STRANGER?)
+(pudding-eater 'henry)
+; (CURSE YOU LISP ALIEN '- YOU ATE MY PUDDING)
+(pudding-eater 'johny)
+; (WHY YOU EAT MY PUDDING STRANGER?)
+; Warning: because the case command uses eq for comparisons,
+; it is usually used only for branching on symbol values.
+; It can't be used to branch on string values, among other things.

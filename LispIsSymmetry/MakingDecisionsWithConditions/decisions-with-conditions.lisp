@@ -146,6 +146,7 @@
 ; (CURSE YOU LISP ALIEN '- YOU ATE MY PUDDING)
 (pudding-eater 'johny)
 ; (WHY YOU EAT MY PUDDING STRANGER?)
+
 ; Warning: because the case command uses eq for comparisons,
 ; it is usually used only for branching on symbol values.
 ; It can't be used to branch on string values, among other things.

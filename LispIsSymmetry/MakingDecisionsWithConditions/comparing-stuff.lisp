@@ -52,3 +52,22 @@
 (eql 3.5 3.5)
 ; T
 (eql #\v #\v)
+; T
+
+;; equalp is essentially the same as equal,
+;; except that it can handle some difficult comparison
+;; cases with a bit of extra sophistication.
+;; For example, tt can compare strings with different
+;; capitalizations and can compare integers against
+;; floating-point numbers
+(equalp "koko" "KoKo")
+; T
+(equalp 2 2.0)
+; T
+
+;; The remaining comparison operators are just specializations
+;; for specific datatypes. Otherwise they are similar to equal.
+;; = -> numbers
+;; string-equal -> for strings
+;; char-equal -> for characters
+;; ...

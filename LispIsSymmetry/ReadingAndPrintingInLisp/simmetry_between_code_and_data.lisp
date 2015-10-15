@@ -12,3 +12,20 @@
 ; *FOO*
 (eval *foo*)
 ; 6
+
+;; Despite its power and simplicity,
+;; an experienced Lisper will only rarely use eval.
+;; The bottom line is that the symmetry of data and code
+;; in Lisp pretty much makes it the poster child of homoiconicity.
+;; Quoting, quasiquoting, eval and macros allow you to take
+;; advantage of this property in your code.
+
+;; Warning: Inexperienced use of eval can pose a security risk.
+
+;; Creating a repl
+
+(defun a-repl ()
+  (loop (print (eval (read)))))
+; A-REPL
+
+(a-repl)

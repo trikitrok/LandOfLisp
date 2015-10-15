@@ -172,3 +172,67 @@
 
 (defun inventory ()
   (cons 'items- (objects-at 'body *objects* *object-locations*)))
+
+;; A read for the game
+;; read-from-string works like read but lets us read a syntax expression
+;; (or any other basic Lisp datatype) from a string
+;; instead of directly from the console.
+;;
+;; Local functions can be defined with labels or flet. Since we're not
+;; using recursion in quote-it, we can use the simpler flet.
+(defun game-read ()
+  (let ((cmd (read-from-string
+               (concatenate 'string "(" (read-line) ")"))))
+    (flet ((quote-it (x)
+                     (list 'quote x)))
+          (cons (car cmd) (mapcar #'quote-it (cdr cmd)))))) ; <- we quote all the arguments
+
+;; An eval for the game
+(defparameter *allowed-commands* '(look walk pickup inventory))
+
+(defun game-eval (sexp)
+  (if (member (car sexp) *allowed-commands*)
+      (eval sexp)
+      '(i do not know that command)))
+
+;; A print for the game
+;; By having this function, we can continue storing the text in the game engine
+;; in the most confortable format possible: lists of symbols.
+;; This format makes it easier to manipulate the text.
+;; Then at the point of presentation, we can decorate this symbol lists
+;; with presentation details.
+
+(defun tweak-text (lst caps lit)
+  (when lst
+    (let ((item (car lst))
+          (rest (cdr lst)))
+      (cond
+        ((eql item #\space) (cons item (tweak-text rest caps lit)))
+        ((member item '(#\! #\? #\.)) (cons item (tweak-text rest t lit)))
+        ((eql item #\") (tweak-text rest caps (not lit)))
+        (lit (cons item (tweak-text rest nil lit)))
+        (caps (cons (char-upcase item) (tweak-text rest nil lit)))
+        (t (cons (char-downcase item) (tweak-text rest nil nil)))))))
+
+;; Coerce converts a string into a list of characters.
+;; By coercing the string into a list of characters,
+;; we reduce the bigger goal of the function into a
+;; list processing problem (the Lisp confort zone).
+(defun game-print (lst)
+  (princ (coerce (tweak-text (coerce (string-trim "() "
+                                                  (prin1-to-string lst))
+                                     'list)
+                             t
+                             nil)
+                 'string))
+  (fresh-line))
+
+;; A REPL for the game
+(defun game-repl ()
+  (let ((cmd (game-read)))
+    (unless (eq (car cmd) 'quit)
+      (game-print (game-eval cmd)) ; <- if cmd is not quit, it does two things
+                                   ; (there's an implicit progn in unless)
+      (game-repl))))
+
+(game-repl)
